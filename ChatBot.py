@@ -33,7 +33,7 @@ def send_text():
     texts = []
     for elem in elements:
         texts.append(elem.text)
-    msg_box.send_keys(texts[-1])
+    msg_box.send_keys("ChatBot:\n"+texts[-1])
     btn = driver.find_element_by_class_name('_35EW6')
     btn.click()
 
