@@ -26,12 +26,11 @@ groups_without_authotization = ['Ersti WiWi', 'Uni Elite und Sascha', 'A-Jugend 
 
 # fortnite keywords and answer when they are detected
 fortnite_words = ['F?', 'f', 'F', 'f?', 'fortnite', 'Fortnite', 'Fortnite?', 'fortnite?']
-fortnite_answer = 'Tim\'s Freizeit ist heute von 10.30 Uhr bis 11.45 Uhr ' \
-                  'und von 12.15 Uhr bis 14.30. '
+fortnite_answer = 'Tim\'s Freizeit ist heute von 16-20 Uhr '
 
 # discord keywords and answer when they are detected
 discord_words = ['disc', 'Disc', 'disc?', 'Disc?', 'Discord', 'discord', 'Discord?',
-                 'discord?', 'on', 'on?', 'On', 'online', 'Online' ]
+                 'discord?', 'on', 'on?', 'On', 'online', 'Online']
 discord_answer = 'Tim ist den ganzen Tag über Discord erreichbar. '
 
 # bad or offensive words that the bot can detect
@@ -47,6 +46,11 @@ def get_machine_algorithm_answer():
 
 # returns the answer the chat bot should print
 def get_answer(texts, chat_name):
+
+    if "ChatBot (v1.0)" in str(texts[-1]):
+        print("ERROR: Last message was from Bot")
+        return ""
+
     list_splitted_msg = str(texts[-1]).split()
 
     return_string = ""
@@ -59,9 +63,9 @@ def get_answer(texts, chat_name):
         if self_online:
             return_string += get_machine_algorithm_answer()
         else:
-            return_string += 'Tim ist zurzeit nicht online. Er antwortet dir/euch innerhalb 20min! '
+            return_string += 'Tim ist zurzeit nicht online. Er antwortet dir/euch innerhalb 20-30 Minuten! '
     elif chat_name not in already_answered:
-        return_string += 'Tim ist zurzeit nicht online.'
+        return_string += 'Tim ist zurzeit nicht online. Er antwortet dir/euch innerhalb 20-30 Minuten! '
         already_answered.append(chat_name)
 
     for item in list_splitted_msg:
@@ -77,6 +81,7 @@ def get_answer(texts, chat_name):
 
     return return_string
 
+
 # text dir class: _2S1VP copyable-text selectable-text
 # button class: _1aTxu
 
@@ -86,30 +91,33 @@ def send_text(par_elements, par_msg_box):
     go_to_infos = driver.find_element_by_class_name('_5SiUq')
     go_to_infos.click()
 
-    time.sleep(3)
+    time.sleep(2)
 
     chat_name = driver.find_element_by_xpath('//div[@class = "{}"]'.format('_2S1VP copyable-text selectable-text')).text
 
     if chat_name == "":
         chat_name = driver.find_element_by_xpath('//span[@class = "{}"]'.format('iYPsH')).text
 
-    print(chat_name)
-
-    time.sleep(3)
-
     go_back = driver.find_element_by_xpath('//button[@class = "{}"]'.format('_1aTxu'))
     go_back.click()
 
     texts = []
+
     for elem in par_elements:
         texts.append(elem.text)
+
     answer = get_answer(texts, chat_name)
+    print(f'CURRENT CHAT: {chat_name}')
+
     if chat_name in groups_without_authotization:
-        print(answer + '##' + 'without authorization')
+        print("ERROR: Bot has no authorization to send the message")
+    elif answer == "":
+        print("ERROR: No answer generated")
     else:
         par_msg_box.send_keys("*ChatBot (v1.0):* " + answer)
         btn = driver.find_element_by_class_name('_35EW6')
         btn.click()
+        print(f'MESSAGE SENT: {answer}')
 
 
 # sets the length of the array from the last scanning of all messages
@@ -132,45 +140,55 @@ def check_for_current_chat_new_message():
         if len(elements) > length_before:
             send_text(elements, msg_box)
     except:
-        print('No new message')
+        print('ERROR: No new message found in current Chat')
 
 
 # checks, whether a new messages drops in other chats not in the current chat
 def check_for_new_chat_new_message():
-    user = driver.find_element_by_xpath('//span[@class = "{}"]'.format('OUeyt'))
-    user.click()
+    try:
+        user = driver.find_element_by_xpath('//span[@class = "{}"]'.format('OUeyt'))
+        user.click()
 
-    time.sleep(1)
+        time.sleep(1)
 
-    # includes the message box where users can enter their message
-    msg_box = driver.find_element_by_class_name('_1Plpp')
+        # includes the message box where users can enter their message
+        msg_box = driver.find_element_by_class_name('_1Plpp')
 
-    # gets all the text elements in a chat
-    span_class = 'selectable-text invisible-space copyable-text'
-    elements = driver.find_elements_by_xpath('//span[@class = "{}"]'.format(span_class))
-    send_text(elements, msg_box)
+        # gets all the text elements in a chat
+        span_class = 'selectable-text invisible-space copyable-text'
+        elements = driver.find_elements_by_xpath('//span[@class = "{}"]'.format(span_class))
+        send_text(elements, msg_box)
+        return True
+    except:
+        print('ERROR: No new message found in all chats')
+        return False
 
 
 # starts the bot
 def start_bot():
-    try:
-        check_for_new_chat_new_message()
-    except:
+    if check_for_new_chat_new_message():
+        print('NEW MESSAGE FOUND IN ALL CHATS')
+    else:
         check_for_current_chat_new_message()
-    print('No new message from any chatroom')
 
 
 if __name__ == '__main__':
     start_bool = input("ChatBot starten [START]: ")
     if start_bool == "START" or start_bool == "start":
+
+        print('\n*** ChatBot wurde gestartet ***\n')
+
         length_before = 0
         already_answered = []
+
         while True:
             start_bot()
-            print('Length before attaching: ' + str(length_before))
+            print('CHAT LENGTH BEFORE ATTACHING: ' + str(length_before))
             try:
                 length_before = set_length_before()
             except:
-                print('No data for length')
-            print('Length after attaching: ' + str(length_before))
+                print('ERROR: No data for length')
+            print('CHAT LENGTH BEFORE ATTACHING: ' + str(length_before))
+            print('------------------------------------------')
+            print('')
             time.sleep(3)
