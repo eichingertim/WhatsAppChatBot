@@ -25,12 +25,12 @@ groups_without_authotization = ['Ersti WiWi', 'Uni Elite und Sascha', 'A-Jugend 
                                 'Schischule B.-A.-Z. ', 'Silke Eichinger']
 
 # fortnite keywords and answer when they are detected
-fortnite_words = ['F?', 'f', 'F', 'f?', 'fortnite', 'Fortnite', 'Fortnite?', 'fortnite?']
+fortnite_words = ['F?', 'f?', 'fortnite', 'Fortnite', 'Fortnite?', 'fortnite?']
 fortnite_answer = 'Tim\'s Freizeit ist heute von 16-20 Uhr '
 
 # discord keywords and answer when they are detected
 discord_words = ['disc', 'Disc', 'disc?', 'Disc?', 'Discord', 'discord', 'Discord?',
-                 'discord?', 'on', 'on?', 'On', 'online', 'Online']
+                 'discord?']
 discord_answer = 'Tim ist den ganzen Tag über Discord erreichbar. '
 
 # bad or offensive words that the bot can detect
@@ -62,10 +62,12 @@ def get_answer(texts, chat_name):
     if 'Tim Eichinger' in str(texts[-1]) or 'Tim' in str(texts[-1]):
         if self_online:
             return_string += get_machine_algorithm_answer()
+        elif chat_name in already_answered:
+            return_string += 'Tim ist zurzeit nicht online. Ich habe übernommen! '
         else:
-            return_string += 'Tim ist zurzeit nicht online. Er antwortet dir/euch innerhalb 20-30 Minuten! '
+            return_string += 'Tim ist zurzeit nicht online. Ich übernehme! '
     elif chat_name not in already_answered:
-        return_string += 'Tim ist zurzeit nicht online. Er antwortet dir/euch innerhalb 20-30 Minuten! '
+        return_string += 'Tim ist zurzeit nicht online. Ich übernehme! '
         already_answered.append(chat_name)
 
     for item in list_splitted_msg:
@@ -80,10 +82,6 @@ def get_answer(texts, chat_name):
             discord_already_in_string = True
 
     return return_string
-
-
-# text dir class: _2S1VP copyable-text selectable-text
-# button class: _1aTxu
 
 
 # Checks, whether the bot can send a message to the specific chat and handles the following send process
