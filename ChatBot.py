@@ -4,6 +4,7 @@
 # Requirements: Latest Chrome or Firefox driver for Test-Automation
 
 from selenium import webdriver
+from ChatBotAnswer import ChatBotAnswer
 import time
 
 # get driver and open web-page
@@ -16,13 +17,10 @@ global length_before
 # variable that saves whether the bot has answered this person or group before
 global already_answered
 
-# Bot Answers and helping variables
-self_online = False
-
 # groups and chats where the bot should not answer
 groups_without_authotization = ['Ersti WiWi', 'Uni Elite und Sascha', 'A-Jugend 2018/2019',
                                 'Renate Mehringer', 'WInfo Erstis WS 18/19', ' Spieler SV 22',
-                                'Schischule B.-A.-Z. ', 'Silke Eichinger']
+                                'Schischule B.-A.-Z. ']
 
 # fortnite keywords and answer when they are detected
 fortnite_words = ['F?', 'f?', 'fortnite', 'Fortnite', 'Fortnite?', 'fortnite?']
@@ -40,8 +38,11 @@ bad_words = ['Larry', 'larry', 'Spast', 'spast', 'Spasti', 'spasti', 'Depp', 'de
 
 
 # machine learning answer
-def get_machine_algorithm_answer():
-    return ''
+def get_machine_algorithm_answer(isTim, question):
+    if isTim:
+        return ChatBotAnswer.get_aet_tim_answer(question)
+    else:
+        return ChatBotAnswer.get_aet_all_answer(question)
 
 
 # returns the answer the chat bot should print
@@ -60,15 +61,18 @@ def get_answer(texts, chat_name):
     bad_words_already_in_string = False
 
     if 'Tim Eichinger' in str(texts[-1]) or 'Tim' in str(texts[-1]):
-        if self_online:
-            return_string += get_machine_algorithm_answer()
-        elif chat_name in already_answered:
-            return_string += 'Tim ist zurzeit nicht online. Ich habe übernommen! '
+        if chat_name in already_answered:
+            return_string += get_machine_algorithm_answer(True, texts[-1])
         else:
             return_string += 'Tim ist zurzeit nicht online. Ich übernehme! '
+            return_string += get_machine_algorithm_answer(True, texts[-1])
+            already_answered.append(chat_name)
     elif chat_name not in already_answered:
         return_string += 'Tim ist zurzeit nicht online. Ich übernehme! '
+        return_string += get_machine_algorithm_answer(False, texts[-1])
         already_answered.append(chat_name)
+    else:
+        return_string += get_machine_algorithm_answer(False, texts[-1])
 
     for item in list_splitted_msg:
         if item in bad_words and not bad_words_already_in_string:
