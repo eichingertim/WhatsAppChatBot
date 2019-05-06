@@ -22,27 +22,15 @@ groups_without_authotization = ['Ersti WiWi', 'Uni Elite und Sascha', 'A-Jugend 
                                 'Renate Mehringer', 'WInfo Erstis WS 18/19', ' Spieler SV 22',
                                 'Schischule B.-A.-Z. ']
 
-# fortnite keywords and answer when they are detected
-fortnite_words = ['F?', 'f?', 'fortnite', 'Fortnite', 'Fortnite?', 'fortnite?']
-fortnite_answer = 'Tim\'s Freizeit ist heute von 16-20 Uhr '
-
-# discord keywords and answer when they are detected
-discord_words = ['disc', 'Disc', 'disc?', 'Disc?', 'Discord', 'discord', 'Discord?',
-                 'discord?']
-discord_answer = 'Tim ist den ganzen Tag über Discord erreichbar. '
-
 # bad or offensive words that the bot can detect
 bad_words = ['Larry', 'larry', 'Spast', 'spast', 'Spasti', 'spasti', 'Depp', 'depp', 'hurensohn',
              'Hurensohn', 'Huansohn', 'huansohn', 'wixer', 'Wixer', 'Sau', 'sau', 'Arsch', 'arsch', 'Arschloch',
-             'arschloch']
+             'arschloch', 'spasst', 'Spasst', 'Spassti', 'spassti']
 
 
 # machine learning answer
-def get_machine_algorithm_answer(isTim, question):
-    if isTim:
-        return ChatBotAnswer.get_aet_tim_answer(question)
-    else:
-        return ChatBotAnswer.get_aet_all_answer(question)
+def get_machine_algorithm_answer(question):
+    return ChatBotAnswer.get_aet_tim_answer(question)
 
 
 # returns the answer the chat bot should print
@@ -53,38 +41,25 @@ def get_answer(texts, chat_name):
         return ""
 
     list_splitted_msg = str(texts[-1]).split()
-
     return_string = ""
-
-    discord_already_in_string = False
-    fortnite_already_in_string = False
     bad_words_already_in_string = False
 
     if 'Tim Eichinger' in str(texts[-1]) or 'Tim' in str(texts[-1]):
         if chat_name in already_answered:
-            return_string += get_machine_algorithm_answer(True, texts[-1])
+            return_string += get_machine_algorithm_answer(texts[-1])
         else:
             return_string += 'Tim ist zurzeit nicht online. Ich übernehme! '
-            return_string += get_machine_algorithm_answer(True, texts[-1])
+            return_string += get_machine_algorithm_answer(texts[-1])
             already_answered.append(chat_name)
     elif chat_name not in already_answered:
         return_string += 'Tim ist zurzeit nicht online. Ich übernehme! '
-        return_string += get_machine_algorithm_answer(False, texts[-1])
+        return_string += get_machine_algorithm_answer(texts[-1])
         already_answered.append(chat_name)
-    else:
-        return_string += get_machine_algorithm_answer(False, texts[-1])
 
     for item in list_splitted_msg:
         if item in bad_words and not bad_words_already_in_string:
             return_string += 'Ich habe eine Beleidigung entdeckt (\"{}\")! Das kann ich nicht tolerieren! '.format(item)
             bad_words_already_in_string = True
-        if item in fortnite_words and not fortnite_already_in_string:
-            return_string += fortnite_answer
-            fortnite_already_in_string = True
-        if item in discord_words and not discord_already_in_string:
-            return_string += discord_answer
-            discord_already_in_string = True
-
     return return_string
 
 
