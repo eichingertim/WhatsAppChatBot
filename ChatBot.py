@@ -18,6 +18,7 @@ global length_before
 global already_answered
 
 # groups and chats where the bot should not answer
+# Can be replaced by personal groups and chats
 groups_without_authorization = ['Ersti WiWi', 'Uni Elite und Sascha', 'A-Jugend 2018/2019',
                                 'Renate Mehringer', 'WInfo Erstis WS 18/19', ' Spieler SV 22',
                                 'Schischule B.-A.-Z. ']
