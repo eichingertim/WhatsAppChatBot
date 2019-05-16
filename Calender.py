@@ -50,4 +50,5 @@ class Calender:
             end_time = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
 
             if end_time >= timedata_now >= start_time:
-                return 'Tim hat gerade folgenden Termin: ' + event['summary'] + '.'
+                return 'Tim hat gerade folgenden Termin: ' + event['summary'] + '.' + ' Der Termin endet um ' \
+                       + str(event['end'].get('dateTime').split('T')[1].split('+')[0]) + " Uhr."
