@@ -4,7 +4,7 @@
 # Requirements: Latest Chrome or Firefox driver for Test-Automation
 
 from selenium import webdriver
-from ChatBotAnswer import ChatBotAnswer
+from Calender import Calender
 import time
 
 # get driver and open web-page
@@ -18,19 +18,19 @@ global length_before
 global already_answered
 
 # groups and chats where the bot should not answer
-groups_without_authotization = ['Ersti WiWi', 'Uni Elite und Sascha', 'A-Jugend 2018/2019',
+groups_without_authorization = ['Ersti WiWi', 'Uni Elite und Sascha', 'A-Jugend 2018/2019',
                                 'Renate Mehringer', 'WInfo Erstis WS 18/19', ' Spieler SV 22',
                                 'Schischule B.-A.-Z. ']
 
 # bad or offensive words that the bot can detect
-bad_words = ['Larry', 'larry', 'Spast', 'spast', 'Spasti', 'spasti', 'Depp', 'depp', 'hurensohn',
-             'Hurensohn', 'Huansohn', 'huansohn', 'wixer', 'Wixer', 'Sau', 'sau', 'Arsch', 'arsch', 'Arschloch',
+bad_words = ['Spast', 'spast', 'Spasti', 'spasti', 'Depp', 'depp', 'hurensohn',
+             'Hurensohn', 'Huansohn', 'huansohn', 'wixer', 'Wixer', 'Arsch', 'arsch', 'Arschloch',
              'arschloch', 'spasst', 'Spasst', 'Spassti', 'spassti']
 
 
 # machine learning answer
-def get_machine_algorithm_answer(question):
-    return ChatBotAnswer.get_aet_tim_answer(question)
+def get_current_event():
+    return Calender.get_current_event()
 
 
 # returns the answer the chat bot should print
@@ -46,14 +46,14 @@ def get_answer(texts, chat_name):
 
     if 'Tim Eichinger' in str(texts[-1]) or 'Tim' in str(texts[-1]):
         if chat_name in already_answered:
-            return_string += get_machine_algorithm_answer(texts[-1])
+            return_string += get_current_event()
         else:
             return_string += 'Tim ist zurzeit nicht online. Ich übernehme! '
-            return_string += get_machine_algorithm_answer(texts[-1])
+            return_string += get_current_event()
             already_answered.append(chat_name)
     elif chat_name not in already_answered:
         return_string += 'Tim ist zurzeit nicht online. Ich übernehme! '
-        return_string += get_machine_algorithm_answer(texts[-1])
+        return_string += get_current_event()
         already_answered.append(chat_name)
 
     for item in list_splitted_msg:
@@ -86,7 +86,7 @@ def send_text(par_elements, par_msg_box):
     answer = get_answer(texts, chat_name)
     print(f'CURRENT CHAT: {chat_name}')
 
-    if chat_name in groups_without_authotization:
+    if chat_name in groups_without_authorization:
         print("ERROR: Bot has no authorization to send the message")
     elif answer == "":
         print("ERROR: No answer generated")
@@ -150,10 +150,10 @@ def start_bot():
 
 
 if __name__ == '__main__':
-    start_bool = input("ChatBot starten [START]: ")
+    start_bool = input("Start ChatBot [START]: ")
     if start_bool == "START" or start_bool == "start":
 
-        print('\n*** ChatBot wurde gestartet ***\n')
+        print('\n*** ChatBot started ***\n')
 
         length_before = 0
         already_answered = []
