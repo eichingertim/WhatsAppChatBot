@@ -6,6 +6,9 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
+
+firstname = "<your firstname>"
+
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
@@ -51,5 +54,5 @@ class Calender:
             end_time = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
 
             if end_time >= timedata_now >= start_time:
-                return 'Tim hat gerade folgenden Termin: ' + event['summary'] + '.' + ' Der Termin endet um ' \
-                       + str(event['end'].get('dateTime').split('T')[1].split('+')[0]) + " Uhr."
+                return firstname + ' has the following event: ' + event['summary'] + '.' + ' It end at ' \
+                       + str(event['end'].get('dateTime').split('T')[1].split('+')[0]) + " ."

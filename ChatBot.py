@@ -1,35 +1,30 @@
 # Simple WhatsApp-ChatBot
 # Future Plan: integrating machine learning, so the bot can send messages by knowledge
 # author: Tim Eichinger
-# Requirements: Latest Chrome or Firefox driver for Test-Automation
 
 from selenium import webdriver
 from Calender import Calender
 import time
 
-# get driver and open web-page
 driver = webdriver.Chrome()
 driver.get('https://web.whatsapp.com/')
 
-# variable for the length before scanning
 global length_before
-
-# variable that saves whether the bot has answered this person or group before
 global already_answered
 
-# groups and chats where the bot should not answer
-# Can be replaced by personal groups and chats
-groups_without_authorization = ['Ersti WiWi', 'Uni Elite und Sascha', 'A-Jugend 2018/2019',
-                                'Renate Mehringer', 'WInfo Erstis WS 18/19', ' Spieler SV 22',
-                                'Schischule B.-A.-Z. ']
+# your fullname and firstname, the bot should detect and use
+fullname = "<your fullname>"
+firstname = "<your firstname>"
 
 # bad or offensive words that the bot can detect
-bad_words = ['Spast', 'spast', 'Spasti', 'spasti', 'Depp', 'depp', 'hurensohn',
-             'Hurensohn', 'Huansohn', 'huansohn', 'wixer', 'Wixer', 'Arsch', 'arsch', 'Arschloch',
-             'arschloch', 'spasst', 'Spasst', 'Spassti', 'spassti']
+# e.g.: bad_words = ['asshole', 'shithead']
+bad_words = []
 
+# groups and persons, the bot should not answer
+# e.g.: groups_without_authorization = ['Footballteam 2019', 'Franz Maier']
+groups_without_authorization = []
 
-# machine learning answer
+# checks and returns your current event
 def get_current_event():
     return Calender.get_current_event()
 
@@ -45,21 +40,21 @@ def get_answer(texts, chat_name):
     return_string = ""
     bad_words_already_in_string = False
 
-    if 'Tim Eichinger' in str(texts[-1]) or 'Tim' in str(texts[-1]):
+    if fullname in str(texts[-1]) or firstname in str(texts[-1]):
         if chat_name in already_answered:
             return_string += get_current_event()
         else:
-            return_string += 'Tim ist zurzeit nicht online. Ich übernehme! '
+            return_string += firstname +  ' is currently not online. I take over! '
             return_string += get_current_event()
             already_answered.append(chat_name)
     elif chat_name not in already_answered:
-        return_string += 'Tim ist zurzeit nicht online. Ich übernehme! '
+        return_string += firstname +  ' is currently not online. I take over! '
         return_string += get_current_event()
         already_answered.append(chat_name)
 
     for item in list_splitted_msg:
         if item in bad_words and not bad_words_already_in_string:
-            return_string += 'Ich habe eine Beleidigung entdeckt (\"{}\")! Das kann ich nicht tolerieren! '.format(item)
+            return_string += 'I discovered an insult (\"{}\")! I can not tolerate that!'.format(item)
             bad_words_already_in_string = True
     return return_string
 
